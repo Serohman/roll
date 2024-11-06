@@ -1,0 +1,9 @@
+# Ignore node modules
+node_modules/
+
+# Ignore build output
+dist/
+coverage/
+
+# Ignore TypeScript build info files
+*.tsbuildinfo
