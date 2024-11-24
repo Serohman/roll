@@ -6,4 +6,5 @@ export default tseslint.config(eslint.configs.recommended, tseslint.configs.stri
   rules: {
     "@typescript-eslint/no-explicit-any": "warn",
   },
+  ignores: ["**/*.test.ts"]
 });
