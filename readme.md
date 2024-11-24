@@ -42,9 +42,9 @@ A mechanic defines the rules and behavior of a roll, shaping how the final resul
 
 The following mechanics are currently available:
 
-- [Advantage/Disadvantage](modules/mechanic/readme.md#advantagedisadvantage)
-- [Reroll (Lucky Roll)](modules/mechanic/readme.md#reroll-lucky-roll)
-- [Exploding Roll](modules/mechanic/readme.md#exploding-roll)
+- [Advantage/Disadvantage](src/mechanic/readme.md#advantagedisadvantage)
+- [Reroll (Lucky Roll)](src/mechanic/readme.md#reroll-lucky-roll)
+- [Exploding Roll](src/mechanic/readme.md#exploding-roll)
 
 #### Example
 
@@ -61,9 +61,9 @@ Randomizers determine how randomness is achieved for rolls, enabling customizabl
 
 In addition to the default strategy (which utilizes `Math.random`), the following randomization strategies are also supported:
 
-- [Karmic Randomizer](modules/randomizer/readme.md#karmic)
-- [Seeded Randomizer](modules/randomizer/readme.md#seeded)
-- [Weighted Randomizer](modules/randomizer/readme.md#weighted)
+- [Karmic Randomizer](src/randomizer/readme.md#karmic)
+- [Seeded Randomizer](src/randomizer/readme.md#seeded)
+- [Weighted Randomizer](src/randomizer/readme.md#weighted)
 
 #### Example
 
