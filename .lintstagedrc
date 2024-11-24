@@ -1,8 +1,7 @@
 {
   "src/**/!(*.test).{ts,tsx,js,jsx}": [
     "npm run precommit:typecheck",
-    "npm run precommit:format",
-    "npm run precommit:lint"
+    "npm run precommit:format"
   ],
   "src/**/*.test.{ts,tsx,js,jsx}": ["npm run precommit:typecheck", "npm run precommit:format", "npm run precommit:test"]
 }

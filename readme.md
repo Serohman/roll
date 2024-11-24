@@ -1,105 +1,147 @@
-# Template: NPM Package
+> [!IMPORTANT]
+> This repository is under active development, and the API is subject to change. Before version 1.0.0, there may be significant updates or modifications to the functionality and structure of the code. Use with caution in production environments and consider pinning your dependency to a specific version.
 
-This is a [template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) which you can use to quickly bootstrap your own NPM package.
+# Dice Rolling Library
 
-## Features
+This library provides a flexible and extensible system for rolling dice in tabletop RPGs, simulations, or any other applications requiring randomized results.
 
-- **Static Typing**: Uses [TypeScript](https://www.typescriptlang.org/) for improved type safety and a better developer experience
-- **Testing**: Pre-configured [Jest](https://jestjs.io/) setup for writing and running unit tests efficiently
-- **Linting**: Leverages [ESLint](https://eslint.org/) to catch potential bugs and enforce coding standards
-- **Auto-Formatting**: Ensures consistent code style with automated formatting using [Prettier](https://prettier.io/)
-- **Continuous Integration (CI)**: Pre-configured [GitHub Actions](https://docs.github.com/en/actions) for linting, testing, building, and formatting in CI environments
-- **Git Hooks**: [Husky](https://typicode.github.io/husky/)-managed Git hooks to run scripts before commits, pushes, and other Git actions, ensuring code quality
-- **Automated Publishing**: Uses [Semantic Release](https://semantic-release.gitbook.io/semantic-release) to automate package versioning and publishing.
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Quick Start](#usage)
+  - [Mechanics](#mechanics)
+  - [Randomizers](#randomizers)
+- [Extending](#extending)
+  - [Randomizer](#randomizer)
+  - [Mechanic](#mechanic)
 
-## Table of Content
+## Installation
 
-- [Quick Start](#quick-start)
-  - [Clone the template](#1-clone-the-template)
-  - [Set Up NPM Authentication](#2-set-up-npm-authentication)
-  - [Install dependencies](#3-install-dependencies)
-  - [Set package metadata](#4-set-package-metadata)
-  - [Publish your package](#5-publish-your-package)
-- [Available NPM Scripts](#available-npm-scripts)
-
-## Quick Start
-
-#### 1. Clone the template
-
-The fastest way is to use GitHub CLI:
+Install the library via npm:
 
 ```bash
-# Create a new repository using a template and clone it
-gh repo create new-repo-name --template serohman/npm-typescript-module
-gh repo clone new-repo-name
-```
-Or refer to the [official guide](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template)  for creating repositories from a template.
-
-#### 2. Set up NPM authentication
-
-You need to generate an [NPM access token](https://docs.npmjs.com/about-access-tokens) and save it as a [GitHub Action Secret](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions), under the key name `NPM_TOKEN`
-
-Use GitHub CLI
-
-```bash
-# A prompt for entering the npm token will appear
-gh secret set NPM_TOKEN
-```
-Or set the secret via the web UI by navigating to your repository's GitHub page, and then: `Settings > Secrets and variables > Actions > New repository secret`.
-#### 3. Install dependencies
-
-```bash
-npm install
+npm install @seroh/roll
 ```
 
-#### 4. Set package metadata
-Open `package.json` and fill out all the relevant fields:
-- `name`
-- `author`
-- `description`
-- `tags`
-- `license`
-- `publishConfig.access` (Set to `private` to make your package private)
+## Usage
 
-#### 5. Publish your package
+Here’s an example of creating a simple D&D `1d20` attack roll with a `-1` modifier:
 
-To publish your package, switch to the `release` branch, then create and push a [semantic commit](https://github.com/semantic-release/semantic-release?tab=readme-ov-file#commit-message-format) with the changes you've made to `package.json`. Once the changes are pushed, GitHub Actions will automatically publish your package.
+```ts
+import {Roll} from "@seroh/roll";
 
-```bash
-git checkout -b "release"
-git stage .
-git commit -m "feat: Setup package"
-git push --set-upstream origin release
+const attack = new Roll(1, 20);
+const result = attack.roll(-1);
+
+console.log(`Natural Roll: ${result.natural}`);
+console.log(`Modified Roll: ${result.modified}`);
 ```
 
-And voilà!🎉 The moment new changes hit the release branch, GitHub Actions will pick them up and publish a new release on NPM.
+### Mechanics
 
-## Available NPM Scripts
+A mechanic defines the rules and behavior of a roll, shaping how the final results are determined. For example, the "Advantage/Disadvantage" mechanic, commonly used in D&D, modifies rolls to favor higher or lower outcomes.
 
-#### General
-These commands are used during the development process to build, test, lint, and format the code.
+The following mechanics are currently available:
 
-- `start`: Runs the `build` script.
-- `build`: Compiles the TypeScript code and watches for changes.
-- `test`: Runs Jest in watch mode.
-- `lint`: Runs ESLint on the `./src` directory.
-- `format`: Formats the code in the `./src` directory using Prettier.
+- [Advantage/Disadvantage](modules/mechanic/readme.md#advantagedisadvantage)
+- [Reroll (Lucky Roll)](modules/mechanic/readme.md#reroll-lucky-roll)
+- [Exploding Roll](modules/mechanic/readme.md#exploding-roll)
 
-#### Precommit Hooks
-These commands are executed before a commit is made to ensure code quality and consistency. They check for issues in the staged files, attempt to fix them automatically (using the --fix flag), and display an error if the issues cannot be fixed. If any problems remain unresolved, the commit is prevented.
+#### Example
 
-- `precommit`: Runs lint-staged to check staged files.
-- `precommit:format`: Formats staged files using Prettier.
-- `precommit:lint`: Fixes linting issues in staged files using ESLint.
-- `precommit:test`: Runs Jest on related tests for staged files.
-- `precommit:typecheck`: Type checks the code without emitting output.
+```ts
+import {Roll, ExplodingMechanic} from "@seroh/roll";
 
-#### Continuous Integration
-These commands are executed by GitHub Actions on the `release` branch. Each time a change is pushed to the `release` branch, these actions are triggered. If any action fails, the release process is halted until the issues are resolved.
+const explodingAttack = new Roll(1, 20, {mechanic: new ExplodingMechanic()});
+const result = explodingAttack.roll();
+```
 
-- `ci:lint`: Runs ESLint with a CI-specific configuration.
-- `ci:test`: Runs Jest with a CI-specific configuration.
-- `ci:build`: Builds the TypeScript project.
-- `ci:format`: Checks code formatting using Prettier.
+### Randomizers
 
----
+Randomizers determine how randomness is achieved for rolls, enabling customizable strategies such as seeded, weighted, or default randomness.
+
+In addition to the default strategy (which utilizes `Math.random`), the following randomization strategies are also supported:
+
+- [Karmic Randomizer](modules/randomizer/readme.md#karmic)
+- [Seeded Randomizer](modules/randomizer/readme.md#seeded)
+- [Weighted Randomizer](modules/randomizer/readme.md#weighted)
+
+#### Example
+
+```ts
+import {Roll, KarmicRandomizer} from "@seroh/roll";
+
+const weightedAttack = new Roll(1, 20, {
+  randomizer: new KarmicRandomizer({
+    highRollThreshold: 0.8,
+    lowRollThreshold: 0.2,
+    biasFactor: 0.2,
+  }),
+});
+const result = weightedAttack.roll();
+```
+
+## Extending
+
+The goal of this library is to provide a clear path for other developers to implement their own roll behaviours, therfore the library is seprated into core modules. Each core module is extensible and allows you to implement your own roll mechanics.
+
+### Randomizer
+
+Developers can implement their own randomization strategies. By default, all rolls use JavaScript's standard `Math.random` method. However, the system is fully extensible, giving you complete control over the randomness.
+
+In order to create your own randomization strategy, you have to extend the `Randomizer` class and override its `generator` method. This method must return a random number between 0 (inclusive) and 1 (exclusive).
+
+**Example of creating your own randomizer**
+
+Here’s an example of how seeded randomness can be achieved. It employs the 'Linear Congruential Generator' (LCG) algorithm instead of the default `Math.random` function, allowing the generator to produce a deterministic random value based on a provided seed.
+
+```ts
+import {Randomizer, Roll} from "@seroh/roll";
+
+class SeededRandomizer extends Randomizer {
+  constructor(private seed: number) {
+    super();
+  }
+
+  // Generate a number between 0 and 1 (exclusive)
+  protected generator(): number {
+    return this.lcg(this.seed);
+  }
+
+  // Linear Congruential Generator (LCG) implementation
+  private lcg(seed: number): number {
+    const a = 1664525;
+    const c = 1013904223;
+    const m = 2 ** 32;
+
+    // Generate the next seed
+    this.seed = (a * seed + c) % m;
+    return this.seed / m;
+  }
+}
+
+const attack = new Roll(1, 20, {
+  randomizer: new SeededRandomizer(12345678),
+});
+```
+
+### Mechanic
+
+A mechanic defines the rules and behavior of a roll, determining how final results are calculated. For instance, you can use a custom mechanic to implement advanced rolling rules such as exploding roll, advantage mechanics, or other game-specific logic. This allows you to encapsulate and reuse the behavior within your rolls seamlessly.
+
+To create your own roll mechanic, extend the Mechanic class and override its do method.
+
+**Example of creating your own roll mechanic**
+
+Here's an implementation of a standard "Advantage" mechanic. This mechanic performs two rolls instead of one and returns the highest result. Additionally, it records the history of rolls in the rolls property.
+
+```ts
+import {Randomizer, Mechanic} from "@seroh/roll";
+
+export class AdvantageMechanic extends Mechanic {
+  do(min: number, max: number, randomizer: Randomizer) {
+    const a = randomizer.generate(min, max);
+    const b = randomizer.generate(min, max);
+    return {result: Math.max(a, b), rolls: [a, b]};
+  }
+}
+```
