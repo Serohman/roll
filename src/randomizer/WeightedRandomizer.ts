@@ -1,3 +1,4 @@
+import {DiceRollError} from "../util/DiceRollError";
 import {Randomizer} from "./Randomizer";
 
 export class WeightedRandomizer extends Randomizer {
@@ -25,13 +26,13 @@ export class WeightedRandomizer extends Randomizer {
 
       // Validate key
       if (key === "" || !Number.isInteger(face) || face <= 0) {
-        throw new Error(`Invalid key "${key}": All keys must be positive integers.`);
+        throw new DiceRollError(`[DiceRollError] Invalid key "${key}": All keys must be positive integers.`);
       }
 
       // Validate value
       if (typeof value !== "number" || value > 1 || value < 0 || isNaN(value)) {
-        throw new Error(
-          `Invalid value for key "${key}": All values must be a number between 0 and 1 (inclusive). Received "${value}".`
+        throw new DiceRollError(
+          `[DiceRollError] Invalid value for key "${key}": All values must be a number between 0 and 1 (inclusive). Received "${value}".`
         );
       }
       if (face > maxFace) {
@@ -41,13 +42,15 @@ export class WeightedRandomizer extends Randomizer {
     }
 
     if (maxFace !== entries.length) {
-      throw new Error(
-        `Incorrect number of weight entries: Expected entries from 1 to ${maxFace}, but received ${entries.length} entries total.`
+      throw new DiceRollError(
+        `[DiceRollError] Incorrect number of weight entries: Expected entries from 1 to ${maxFace}, but received ${entries.length} entries total.`
       );
     }
 
     if (weightSum != 1) {
-      throw new Error(`Incorrect weights provided, the total of all weights expected to be 1. Got ${weightSum}`);
+      throw new DiceRollError(
+        `[DiceRollError] Incorrect weights provided, the total of all weights expected to be 1. Got ${weightSum}`
+      );
     }
   }
 
@@ -71,7 +74,7 @@ export class WeightedRandomizer extends Randomizer {
     }
 
     // Should not reach here if weights are valid
-    throw new Error("Invalid weights or random value.");
+    throw new DiceRollError("[DiceRollError] Invalid weights or random value.");
   }
 
   protected override scaleToRange(weightedRoll: number): number {

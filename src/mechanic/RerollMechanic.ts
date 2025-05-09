@@ -1,4 +1,5 @@
 import {Randomizer} from "../randomizer/Randomizer";
+import {DiceRollError} from "../util/DiceRollError";
 import {Mechanic} from "./Mechanic";
 
 export class RerollMechanic extends Mechanic {
@@ -25,13 +26,13 @@ export class RerollMechanic extends Mechanic {
 
   private validateOptions({target: target, maxRerollCount: times}: RerollMechanic.Options): void {
     if (target.length === 0) {
-      throw new Error("Target can not be an empty array.");
+      throw new DiceRollError("Target can not be an empty array.");
     }
     if (target.some((target) => typeof target !== "number")) {
-      throw new Error("All values in the target array must be numbers.");
+      throw new DiceRollError("All values in the target array must be numbers.");
     }
     if (typeof times !== "number" || !Number.isInteger(times) || times <= 0) {
-      throw new Error("Times must be a positive integer.");
+      throw new DiceRollError("Times must be a positive integer.");
     }
   }
 }

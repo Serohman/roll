@@ -1,3 +1,4 @@
+import {DiceRollError} from "../util/DiceRollError";
 import {Randomizer} from "./Randomizer";
 
 export class SeededRandomizer extends Randomizer {
@@ -23,11 +24,11 @@ export class SeededRandomizer extends Randomizer {
 
   private validateSeed(seed: number): void {
     if (!Number.isInteger(seed)) {
-      throw new Error("Seed must be an integer.");
+      throw new DiceRollError("[DiceRollError] Seed must be an integer.");
     }
 
     if (seed < 0 || seed >= 2 ** 32) {
-      throw new Error("Seed must be a 32-bit unsigned integer (0 <= seed < 2^32).");
+      throw new DiceRollError("[DiceRollError] Seed must be a 32-bit unsigned integer (0 <= seed < 2^32).");
     }
   }
 }
