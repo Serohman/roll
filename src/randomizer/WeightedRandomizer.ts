@@ -1,10 +1,36 @@
 import {DiceRollError} from "../util/DiceRollError";
 import {Randomizer} from "./Randomizer";
 
+/**
+ * Implements a weighted randomization strategy, allowing custom probability distributions for outcomes.
+ *
+ * @remarks
+ * Each outcome is assigned a probability weight. The sum of all weights must equal 1.
+ *
+ * @example
+ * ```ts
+ * const randomizer = new WeightedRandomizer({
+ *   1: 0.1,
+ *   2: 0.1,
+ *   3: 0.1,
+ *   4: 0.1,
+ *   5: 0.1,
+ *   6: 0.5,
+ * });
+ * ```
+ *
+ * @public
+ */
 export class WeightedRandomizer extends Randomizer {
   private weights: number[];
   private cumulativeWeights: number[];
 
+  /**
+   * Constructs a WeightedRandomizer with the specified weights.
+   *
+   * @param weights - An object mapping outcome numbers to their probability weights. Keys must be consecutive positive integers starting from 1. The sum of all weights must be 1.
+   * @throws DiceRollError if weights are invalid.
+   */
   constructor(weights: Record<number, number>) {
     super();
     this.validateWeights(weights);
@@ -12,6 +38,11 @@ export class WeightedRandomizer extends Randomizer {
     this.cumulativeWeights = this.convertToCumulativeWeights(this.weights);
   }
 
+  /**
+   * Generates a weighted random outcome based on the provided weights.
+   *
+   * @returns The selected outcome as a number, based on the weighted distribution.
+   */
   generator(): number {
     return this.mapToWeightedValue(Math.random(), this.cumulativeWeights);
   }

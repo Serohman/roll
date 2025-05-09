@@ -1,16 +1,41 @@
 import {DiceRollError} from "../util/DiceRollError";
 import {Randomizer} from "./Randomizer";
 
+/**
+ * Implements a seeded randomization strategy using a linear congruential generator (LCG).
+ *
+ * @remarks
+ * Produces deterministic random sequences based on the provided seed. Useful for reproducible results.
+ *
+ * @example
+ * ```ts
+ * const randomizer = new SeededRandomizer(12345);
+ * const value = randomizer.generate(1, 20);
+ * ```
+ *
+ * @public
+ */
 export class SeededRandomizer extends Randomizer {
   private static readonly LCG_MULTIPLIER = 1664525;
   private static readonly LCG_INCREMENT = 1013904223;
   private static readonly LCG_MODULUS = 2 ** 32;
 
+  /**
+   * Constructs a SeededRandomizer with the specified seed.
+   *
+   * @param seed - The initial seed value (32-bit unsigned integer).
+   * @throws DiceRollError if the seed is invalid.
+   */
   constructor(public seed: number) {
     super();
     this.validateSeed(seed);
   }
 
+  /**
+   * Generates a deterministic random value in the range [0, 1) using the LCG algorithm.
+   *
+   * @returns A floating-point number in the range [0, 1).
+   */
   protected generator(): number {
     return this.lcg(this.seed);
   }
