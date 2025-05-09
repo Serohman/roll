@@ -42,7 +42,6 @@
     "dist",
     "readme.md"
   ],
-
   "scripts": {
     "prepare": "husky",
     "start": "npm run build",
@@ -58,7 +57,8 @@
     "ci:lint": "npx eslint ./src --config eslint.config.ci.mjs",
     "ci:test": "jest --config jest.config.js --bail",
     "ci:build": "tsc --build",
-    "ci:format": "npx prettier --check ./src"
+    "ci:format": "npx prettier --check ./src",
+    "ci": "npm run ci:lint && npm run ci:test && npm run ci:build && npm run ci:format"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
