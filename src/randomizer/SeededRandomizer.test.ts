@@ -131,4 +131,19 @@ describe("SeededRandomizer", () => {
 
     expect(initialSeed).not.toBe(updatedSeed);
   });
+
+  describe("SeededRandomizer edge seed values", () => {
+    test("should accept seed 0", () => {
+      expect(() => new SeededRandomizer(0)).not.toThrow();
+    });
+    test("should accept seed 2^32-1", () => {
+      expect(() => new SeededRandomizer(0xffffffff)).not.toThrow();
+    });
+    test("should throw for negative seed", () => {
+      expect(() => new SeededRandomizer(-1)).toThrow();
+    });
+    test("should throw for non-integer seed", () => {
+      expect(() => new SeededRandomizer(1.5)).toThrow();
+    });
+  });
 });

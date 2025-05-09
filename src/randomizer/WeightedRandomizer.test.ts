@@ -154,3 +154,26 @@ describe("WeightedRandomizer", () => {
     });
   });
 });
+
+describe("WeightedRandomizer Integration & Edge Cases", () => {
+  test("generator() should return a valid weighted value", () => {
+    const randomizer = new WeightedRandomizer({1: 0.5, 2: 0.5});
+    const value = randomizer.generator();
+    expect([1, 2]).toContain(value);
+  });
+
+  test("generate() should return a value in the weighted range", () => {
+    const randomizer = new WeightedRandomizer({1: 0.5, 2: 0.5});
+    for (let i = 0; i < 10; i++) {
+      const value = randomizer.generate(1, 2);
+      expect([1, 2]).toContain(value);
+    }
+  });
+
+  test("all weights except one are zero should always return that value", () => {
+    const randomizer = new WeightedRandomizer({1: 1, 2: 0, 3: 0});
+    for (let i = 0; i < 10; i++) {
+      expect(randomizer.generate(1, 3)).toBe(1);
+    }
+  });
+});

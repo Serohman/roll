@@ -34,3 +34,14 @@ describe("RandomizerDefault", () => {
     });
   });
 });
+
+describe("SimpleRandomizer randomness", () => {
+  test("should not always return the same value", () => {
+    const randomizer = new SimpleRandomizer();
+    const results = new Set();
+    for (let i = 0; i < 10; i++) {
+      results.add(randomizer.generate(1, 100));
+    }
+    expect(results.size).toBeGreaterThan(1);
+  });
+});

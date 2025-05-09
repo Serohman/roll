@@ -200,3 +200,48 @@ describe("KarmicRandomizer", () => {
     });
   });
 });
+
+describe("KarmicRandomizer Configuration & Integration", () => {
+  test("constructor applies custom config", () => {
+    const randomizer = new KarmicRandomizer({
+      highRollThreshold: 0.7,
+      lowRollThreshold: 0.3,
+      biasFactor: 0.5,
+      historyLimit: 5,
+    });
+    expect(randomizer.highRollThreshold).toBe(0.7);
+    expect(randomizer.lowRollThreshold).toBe(0.3);
+    expect(randomizer.biasFactor).toBe(0.5);
+    expect(randomizer.historyLimit).toBe(5);
+  });
+
+  test("historyQueue does not exceed historyLimit", () => {
+    const randomizer = new KarmicRandomizer({historyLimit: 3});
+    // Simulate 6 rolls
+    for (let i = 0; i < 6; i++) {
+      jest.spyOn(randomizer as any, "generateRawRoll").mockReturnValue(0.9); // Always HIGH
+      randomizer["generator"]();
+    }
+    expect(randomizer["historyQueue"].length).toBeLessThanOrEqual(3);
+  });
+
+  test("integration: bias effect over multiple rolls", () => {
+    // Use a fixed biasFactor and thresholds for predictability
+    const randomizer = new KarmicRandomizer({
+      biasFactor: 0.5,
+      highRollThreshold: 0.8,
+      lowRollThreshold: 0.2,
+      historyLimit: 10,
+    });
+    // Force history to be all LOW, so bias should push result up
+    randomizer["historyQueue"] = Array(10).fill(KarmicRandomizer["HistoryEntry"].LOW);
+    jest.spyOn(randomizer as any, "generateRawRoll").mockReturnValue(0.2);
+    const result = randomizer["generator"]();
+    expect(result).toBeCloseTo(0.7, 10); // 0.2 + 0.5 bias
+    // Now force history to be all HIGH, so bias should push result down
+    randomizer["historyQueue"] = Array(10).fill(KarmicRandomizer["HistoryEntry"].HIGH);
+    jest.spyOn(randomizer as any, "generateRawRoll").mockReturnValue(0.8);
+    const result2 = randomizer["generator"]();
+    expect(result2).toBeCloseTo(0.3, 10); // 0.8 - 0.5 bias
+  });
+});
