@@ -92,3 +92,45 @@ describe("RerollMechanic", () => {
   // it("should return a list of rolled values (including the rerolled values)");
   // it("should return a valid value");
 });
+
+describe("RerollMechanic edge cases", () => {
+  const randomizer = {
+    generate: jest.fn((min) => min),
+  } as any;
+
+  test("should return min when min = max", () => {
+    const mechanic = new RerollMechanic({target: [1], maxRerollCount: 2});
+    const minMax = 7;
+    const {result, rolls} = mechanic.do(minMax, minMax, randomizer);
+    expect(result).toBe(minMax);
+    expect(rolls).toEqual([minMax]); // Only one roll possible
+  });
+
+  test("should handle negative min and max", () => {
+    const mechanic = new RerollMechanic({target: [-5], maxRerollCount: 2});
+    const {result, rolls} = mechanic.do(-5, -1, randomizer);
+    expect(result).toBe(-5);
+    expect(rolls).toEqual([-5, -5, -5]); // 1 initial + 2 rerolls
+  });
+
+  test("should handle float min and max", () => {
+    const mechanic = new RerollMechanic({target: [1.5], maxRerollCount: 2});
+    const {result, rolls} = mechanic.do(1.5, 2.5, randomizer);
+    expect(result).toBe(1.5);
+    expect(rolls).toEqual([1.5, 1.5, 1.5]); // 1 initial + 2 rerolls
+  });
+
+  test("should not reroll if target is outside min/max range", () => {
+    const mechanic = new RerollMechanic({target: [100], maxRerollCount: 2});
+    const {result, rolls} = mechanic.do(1, 6, randomizer);
+    expect(result).toBe(1);
+    expect(rolls).toEqual([1]);
+  });
+
+  test("should default maxRerollCount to 1 if undefined", () => {
+    const mechanic = new RerollMechanic({target: [1]});
+    const randomizer = {generate: jest.fn(() => 1)} as any;
+    const {rolls} = mechanic.do(1, 6, randomizer);
+    expect(rolls.length).toBe(2); // 1 initial + 1 reroll
+  });
+});

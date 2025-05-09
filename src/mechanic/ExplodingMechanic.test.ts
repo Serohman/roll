@@ -59,4 +59,36 @@ describe("ExplodingMechanic", () => {
       expect(rolls).toEqual([6, 6, 2]);
     });
   });
+
+  describe("ExplodingMechanic edge cases", () => {
+    const mechanic = new ExplodingMechanic();
+    const randomizer = {
+      generate: jest.fn((min) => min),
+    } as any;
+
+    test("should handle negative min and max", () => {
+      const {result, rolls} = mechanic.do(-5, -1, randomizer);
+      expect(result).toBe(-5);
+      expect(rolls).toEqual([-5]);
+    });
+
+    test("should handle float min and max", () => {
+      const {result, rolls} = mechanic.do(1.5, 2.5, randomizer);
+      expect(result).toBe(1.5);
+      expect(rolls).toEqual([1.5]);
+    });
+
+    test("should handle a large number of explosions without stack overflow", () => {
+      // Always return max for 100 times, then min
+      let calls = 0;
+      const max = 6;
+      const min = 1;
+      const randomizer = {
+        generate: jest.fn(() => (++calls <= 100 ? max : min)),
+      } as any;
+      const {result, rolls} = mechanic.do(min, max, randomizer);
+      expect(rolls.length).toBe(101);
+      expect(result).toBe(100 * max + min);
+    });
+  });
 });

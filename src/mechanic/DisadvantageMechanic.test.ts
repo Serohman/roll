@@ -46,3 +46,29 @@ describe("DisadvantageBehahviour", () => {
     });
   });
 });
+
+describe("DisadvantageMechanic edge cases", () => {
+  const mechanic = new DisadvantageMechanic();
+  const randomizer = {
+    generate: jest.fn((min) => min),
+  } as any;
+
+  test("should return min when min = max", () => {
+    const minMax = 7;
+    const {result, rolls} = mechanic.do(minMax, minMax, randomizer);
+    expect(result).toBe(minMax);
+    expect(rolls).toEqual([minMax, minMax]);
+  });
+
+  test("should handle negative min and max", () => {
+    const {result, rolls} = mechanic.do(-5, -1, randomizer);
+    expect(result).toBe(-5);
+    expect(rolls).toEqual([-5, -5]);
+  });
+
+  test("should handle float min and max", () => {
+    const {result, rolls} = mechanic.do(1.5, 2.5, randomizer);
+    expect(result).toBe(1.5);
+    expect(rolls).toEqual([1.5, 1.5]);
+  });
+});
