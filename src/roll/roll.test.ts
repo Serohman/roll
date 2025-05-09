@@ -85,3 +85,70 @@ describe("Roll", () => {
     });
   });
 });
+
+describe("Roll edge cases and config", () => {
+  test("should return min when min = max", () => {
+    const roll = new Roll(7, 7);
+    const result = roll.roll();
+    expect(result.natural).toBe(7);
+    expect(result.rolls).toEqual([7]);
+  });
+
+  test("should throw for min > max", () => {
+    expect(() => new Roll(10, 1).roll()).toThrow();
+  });
+
+  test("should throw for negative min or max", () => {
+    expect(() => new Roll(-1, 10).roll()).toThrow();
+    expect(() => new Roll(1, -10).roll()).toThrow();
+  });
+
+  test("should throw for float min or max", () => {
+    expect(() => new Roll(1.5, 10).roll()).toThrow();
+    expect(() => new Roll(1, 10.5).roll()).toThrow();
+  });
+
+  test("should work with default construction (no config)", () => {
+    const roll = new Roll(1, 6);
+    const result = roll.roll();
+    expect(result.natural).toBeGreaterThanOrEqual(1);
+    expect(result.natural).toBeLessThanOrEqual(6);
+  });
+
+  test("should allow both mechanic and randomizer override", () => {
+    const roll = new Roll(1, 20);
+    const mockMechanic = {do: jest.fn().mockReturnValue({result: 5, rolls: [5]})};
+    const mockRandomizer = {generate: jest.fn(() => 5)} as any;
+    const result = roll.roll(0, {mechanic: mockMechanic, randomizer: mockRandomizer});
+    expect(result.natural).toBe(5);
+    expect(mockMechanic.do).toHaveBeenCalledWith(1, 20, mockRandomizer);
+  });
+
+  test("rollAdvantage should allow overrideDefaults", () => {
+    const roll = new Roll(1, 20);
+    const mockRandomizer = {generate: jest.fn(() => 5)} as any;
+    const result = roll.rollAdvantage(0, {randomizer: mockRandomizer});
+    expect(result.rolls.length).toBe(2);
+  });
+
+  test("rollDisadvantage should allow overrideDefaults", () => {
+    const roll = new Roll(1, 20);
+    const mockRandomizer = {generate: jest.fn(() => 5)} as any;
+    const result = roll.rollDisadvantage(0, {randomizer: mockRandomizer});
+    expect(result.rolls.length).toBe(2);
+  });
+
+  test("should handle undefined or NaN modifier as 0", () => {
+    const roll = new Roll(1, 20, {randomizer: new MockReturn10Randomizer()});
+    expect(roll.roll(undefined as any).modified).toBe(10);
+    expect(roll.roll(NaN).modified).toBe(10);
+  });
+
+  test("should support mechanic that returns custom rolls array", () => {
+    const roll = new Roll(1, 20);
+    const customMechanic = {do: jest.fn().mockReturnValue({result: 42, rolls: [1, 2, 3]})};
+    const result = roll.roll(0, {mechanic: customMechanic});
+    expect(result.natural).toBe(42);
+    expect(result.rolls).toEqual([1, 2, 3]);
+  });
+});
