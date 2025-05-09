@@ -7,7 +7,7 @@ export class ExplodingMechanic extends Mechanic {
 
     let result = 0;
     let roll;
-    let rolls = [];
+    const rolls: number[] = [];
 
     do {
       roll = randomizer.generate(min, max);
